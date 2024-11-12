@@ -10,7 +10,7 @@
   - **224x224** (原始版本)
   - **224x130** (改進版本)
 - 訓練目標：車道辨識，預測路徑落點
-- 平均辨識速率：50ms~110ms (提升版本) / 150ms~200ms (原始版本)
+- 平均辨識速率：60ms~80ms (提提升版本)、50ms~110ms (提升版本) / 150ms~200ms (原始版本)
 - 相機FPS：
   - 5fps（224x224 原始版本）
   - 9~13fps（224x130 改進版本）
@@ -55,9 +55,12 @@
 - **影像裁剪**：
   - 去除影像上半部分 40% 的資料，避免背景干擾，僅保留車道特徵，有助於提高模型穩定性。
   - 對 ResNet-18 進行輸入適配 (224x130) 訓練，顯著減少辨識延遲。
-- 半精度(量化)
+- 半精度(量化)10%~20%剪枝
   - 將訓練好的模型減少精度FP32->FP16 加速計算
   - 並重新fintuning [減小模型.ipynb](Midterm%2FTrain%2F%E6%B8%9B%E5%B0%8F%E6%A8%A1%E5%9E%8B.ipynb)
+  - 提升到60ms~80ms
+- TensorRT
+  - 執行腳本(本地我搞不出來)[Colab腳本]("https://colab.research.google.com/drive/1i6E-K5drZ0D1g93dLfZ-GSJjIvasuc9K#scrollTo=usF1VG4o2J6-")
 ---
 
 #### 影片演示
@@ -79,5 +82,8 @@
   - [resnet18_1600_v2.pth](Result/resnet18_1600_v2.pth)
   - [resnet18_1600_v3.pth](Result/resnet18_1600_v3.pth)
   - [resnet18_1600_v4.pth](Result/resnet18_1600_v4.pth)
-
+  - [resnet18_finetuned_fp16.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16.pth)
+  - [resnet18_finetuned_fp16_pruned.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16_pruned.pth)
+  - (x)[resnet18_finetuned_fp16_pruned_TensorRT.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16_pruned_TensorRT.pth)
+  - [resnet18_finetuned_fp16_pruned_20.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16_pruned_20.pth)
 ---
