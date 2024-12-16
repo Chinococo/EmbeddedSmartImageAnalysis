@@ -87,3 +87,32 @@
   - (x)[resnet18_finetuned_fp16_pruned_TensorRT.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16_pruned_TensorRT.pth)
   - [resnet18_finetuned_fp16_pruned_20.pth](Midterm%2FResult%2Fresnet18_finetuned_fp16_pruned_20.pth)
 ---
+
+
+## YoloV4_tiny Car object detect
+> train.txt is form [dataset](https://www.kaggle.com/code/balraj98/yolo-v5-car-object-detection/input) 
+> 
+> train2.txt is base on train.txt add
+> [dataset](https://www.kaggle.com/datasets/saumyapatel/traffic-vehicles-object-detection/suggestions?status=pending&yourSuggestions=true) fliter by car anntoion
+### Main Code(Running on colab)
+[YoloV4.ipynb](Hw3_YoloV4_tiny%2FYoloV4.ipynb)
+[colab](https://colab.research.google.com/drive/1wLqsLnIht2j7tjL7eopB47cOAi5-Je1x?usp=sharing)
+#### Version1
+1. [coco.data](Hw3_YoloV4_tiny%2Fcoco.data)
+2. [obj.name](Hw3_YoloV4_tiny%2Fobj.name)
+3. [train.txt](Hw3_YoloV4_tiny%2Ftrain.txt)
+4. [yolov4-tiny.weights](Hw3_YoloV4_tiny%2Fyolov4-tiny.weights)
+5. [yolov4-tiny-obj.cfg](Hw3_YoloV4_tiny%2Fyolov4-tiny-obj.cfg)
+##### Result
+- [yolov4-tiny-obj_final (2).weights](Hw3_YoloV4_tiny%2Fv1%2Fyolov4-tiny-obj_final%20%282%29.weights)
+- [predict Result Viedo](https://www.youtube.com/watch?v=JSLVMdWxJfk)
+---
+#### Version2
+1. [coco.data](Hw3_YoloV4_tiny%2Fcoco.data)
+2. [obj.name](Hw3_YoloV4_tiny%2Fobj.name)
+3. [train2.txt](Hw3_YoloV4_tiny%2Ftrain2.txt)
+4. [yolov4-tiny.weights](Hw3_YoloV4_tiny%2Fyolov4-tiny.weights)
+5. [yolov4-tiny-obj.cfg](Hw3_YoloV4_tiny%2Fyolov4-tiny-obj.cfg)
+##### Result
+- [yolov4-tiny-obj_last.weights](Hw3_YoloV4_tiny%2Fv2%2Fyolov4-tiny-obj_last.weights)
+- [predict Result Viedo](https://www.youtube.com/watch?v=HIHQPvlyBII)

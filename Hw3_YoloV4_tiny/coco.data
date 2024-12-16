@@ -1,0 +1,6 @@
+classes= 1
+train  = /content/drive/MyDrive/YoloV4/train2.txt
+names = /content/drive/MyDrive/YoloV4/obj.name
+backup = /content/drive/MyDrive/YoloV4/backup3
+eval=coco
+
