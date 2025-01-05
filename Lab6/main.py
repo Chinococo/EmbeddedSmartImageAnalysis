@@ -5,16 +5,20 @@ from flask import Flask, request, jsonify, render_template
 import openai
 import os
 
+from ipykernel.jsonutil import encode_images
 from openai import OpenAI
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
+import base64
 
+def encode_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 # Load environment variables from .env file
 load_dotenv()
 
 # Get sensitive values from environment variables
-IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 print(OPENAI_API_KEY)
 # Initialize Flask app
@@ -25,9 +29,10 @@ client = OpenAI(
     api_key = OPENAI_API_KEY
 )
 # Function to analyze image (using OpenAI Image API or other logic)
-def analyze_image_with_openai(image_url):
+def analyze_image_with_openai(file_path):
     try:
-        print(image_url)
+        print(file_path)
+        base64_image = encode_image(file_path)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -38,7 +43,7 @@ def analyze_image_with_openai(image_url):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": image_url,
+                                "url": f"data:image/png;base64,{base64_image}",
                             },
                         },
                     ],
@@ -70,18 +75,6 @@ def analyze_text_with_openai(input_text):
         return response.choices[0].message.content
     except Exception as e:
         return f"Error: {e}"
-def upload_to_imgur(file_path):
-    headers = {"Authorization": f"Client-ID {IMGUR_CLIENT_ID}"}
-    with open(file_path, "rb") as file:
-        response = requests.post(
-            "https://api.imgur.com/3/upload",
-            headers=headers,
-            files={"image": file}
-        )
-    if response.status_code == 200:
-        return response.json()["data"]["link"]  # 返回圖片的公開 URL
-    else:
-        return None
 # Define the home route
 @app.route("/")
 def index():
@@ -117,13 +110,8 @@ def analyze_image():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-
-        image_url = upload_to_imgur(file_path)
-        if not image_url:
-            return jsonify({"error": "Failed to upload image to Imgur."}), 500
-        print(image_url)
         # Perform image analysis
-        analysis_result = analyze_image_with_openai(image_url)
+        analysis_result = analyze_image_with_openai(file_path)
         return jsonify({"result": analysis_result})
 
     return jsonify({"error": "Invalid file type."}), 400
