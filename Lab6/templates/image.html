@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖片分析</title>
+</head>
+<body>
+    <h1>圖片分析工具</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="file" name="file" accept="image/*">
+        <br><br>
+        <button type="button" onclick="uploadImage()">分析圖片</button>
+    </form>
+    <h2>分析結果：</h2>
+    <pre id="output"></pre>
+
+    <script>
+        async function uploadImage() {
+            const formData = new FormData();
+            const fileInput = document.getElementById("file");
+            formData.append("file", fileInput.files[0]);
+
+            const response = await fetch("/analyze-image", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById("output").textContent = result.result || result.error;
+        }
+    </script>
+</body>
+</html>

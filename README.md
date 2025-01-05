@@ -116,3 +116,4 @@
 ##### Result
 - [yolov4-tiny-obj_last.weights](Hw3_YoloV4_tiny%2Fv2%2Fyolov4-tiny-obj_last.weights)
 - [predict Result Viedo](https://www.youtube.com/watch?v=HIHQPvlyBII)
+- [Final Good Result](https://youtu.be/IBy0CXA6RpY)

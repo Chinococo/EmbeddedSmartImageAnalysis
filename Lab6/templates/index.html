@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字分析工具</title>
+</head>
+<body>
+    <h1>ChatGPT 文字分析</h1>
+    <textarea id="inputText" rows="6" cols="50" placeholder="輸入文字進行分析"></textarea>
+    <br><br>
+    <button onclick="analyzeText()">分析</button>
+    <h2>分析結果：</h2>
+    <pre id="output"></pre>
+
+    <script>
+        async function analyzeText() {
+            const inputText = document.getElementById("inputText").value;
+            const response = await fetch("/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: inputText })
+            });
+
+            const result = await response.json();
+            if (result.analysis) {
+                document.getElementById("output").textContent = result.analysis;
+            } else {
+                document.getElementById("output").textContent = "分析失敗：" + result.error;
+            }
+        }
+    </script>
+</body>
+</html>
