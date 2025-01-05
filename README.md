@@ -117,3 +117,42 @@
 - [yolov4-tiny-obj_last.weights](Hw3_YoloV4_tiny%2Fv2%2Fyolov4-tiny-obj_last.weights)
 - [predict Result Viedo](https://www.youtube.com/watch?v=HIHQPvlyBII)
 - [Final Good Result](https://youtu.be/IBy0CXA6RpY)
+### Project5
+- [訓練執行檔](https://colab.research.google.com/drive/1wLqsLnIht2j7tjL7eopB47cOAi5-Je1x#scrollTo=ZRh5epEz6YhB)
+  - [訓練資料夾](https://drive.google.com/drive/folders/1JtiYKp36zMfkaHJohwD2RDVhOyoeQQq7?usp=drive_link)
+  - [訓練配置檔](Project5%2Fyolov4-tiny-224.cfg)
+  - [訓練結果](Project5%2Fyolov4-tiny-224.weights)
+- [Demo code](Project5%2Fproject5.ipynb)
+  - [trt權重](Project5%2Fyolov4-tiny-224.trt)
+### Lab6
+
+#### 功能概述
+1. **文字分析**  
+   - 使用 OpenAI GPT API 將文字轉換為動作清單。  
+   - 路由：`/analyze` (POST)
+
+2. **圖片分析**  
+   - 將圖片上傳到 Imgur，並用 OpenAI API 分析圖片內容。  
+   - 路由：`/analyze-image` (POST)
+
+3. **主頁與圖片頁面**  
+   - 主頁：`/`  
+   - 圖片頁面：`/image`
+
+---
+
+#### 必要配置
+請建立 `.env` 文件，在Lab6底下，內容如下：
+```env
+IMGUR_CLIENT_ID=???
+OPENAI_API_KEY=??
+```
+#### 結果
+##### 文字分析
+![img.png](Lab6%2Fimg%2Fimg.png)
+##### 圖片分析
+> 輸入:  
+> ![00c4731c-967a-47bf-9f9c-9940b8443921.jpg](Lab6%2Fimg%2F00c4731c-967a-47bf-9f9c-9940b8443921.jpg)
+
+>結果:
+>![img_1.png](Lab6%2Fimg%2Fimg_1.png)
