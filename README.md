@@ -156,3 +156,119 @@ OPENAI_API_KEY=??
 
 >結果:
 >![img_1.png](Lab6%2Fimg%2Fimg_1.png)
+
+
+
+### 期末考
+先使用之前midterm 訓練的[resnet18_finetuned_fp16_pruned.pth](final_exam%2Fresnet18_finetuned_fp16_pruned.pth)模型
+轉換成trt[best_steering_model_xy_trt.pth](final_exam%2Fbest_steering_model_xy_trt.pth)
+
+我使用之前的訓練資料，使用[main.py](final_exam%2FFintuning%2Fmain.py)建立訓練資料 在使用chatgpt 去fintuning 4o模型
+![Screenshot_20250106_232912_Chrome.jpg](final_exam%2FDemoImage%2FScreenshot_20250106_232912_Chrome.jpg)
+使用[ApiSever.ipynb](final_exam%2FApiSever.ipynb) 建立fastAPi
+用[test.py](final_exam%2Ftest.py)腳本去將圖片進入分析
+#### 最終程式[Demp程式.ipynb](final_exam%2FDemp%E7%A8%8B%E5%BC%8F.ipynb)
+##### 分析部分
+```python
+def analyze_image(image_array):
+    # 将 NumPy 数组转换为 JPEG 格式
+    _, image_encoded = cv2.imencode('.jpeg', image_array)
+    image_bytes = image_encoded.tobytes()  # 转换为字节格式
+
+    # 将字节作为文件上传
+    response = requests.post(
+        "http://0.0.0.0:5000/analyze-image",
+        files={"file": ("image.jpeg", image_bytes, "image/jpeg")}
+    )
+    return response.json()  # 假设 API 返回 JSON 格式的分析结果
+```
+##### 判斷操作
+```python
+if target=="Stop" :
+                    current_time = time.time()
+                    if current_time - last_triggered["Stop"] > trigger_interval:
+                        robot.left_motor.value = 0
+                        robot.right_motor.value = 0
+                        left_motor_slider.value = 0
+                        right_motor_slider.value = 0
+                        label_widget2.value = "直接停下來"
+                        last_triggered["Stop"] = current_time
+                        start_time = current_time+100
+                elif target == "Stop and Proceed":
+                    current_time = time.time()
+                    if current_time - last_triggered["Stop and Proceed"] > trigger_interval:
+                        robot.left_motor.value = 0
+                        robot.right_motor.value = 0
+                        left_motor_slider.value = 0
+                        right_motor_slider.value = 0
+                        label_widget2.value = "正在執行 等待兩秒"
+                        start_time = current_time+2
+                        last_triggered["Stop and Proceed"] = current_time
+                        
+
+                elif target == "Railroad Crossing Warning":
+                    current_time = time.time()
+                    if current_time - last_triggered["Railroad Crossing Warning"] > trigger_interval:
+                        robot.left_motor.value = 0
+                        robot.right_motor.value = 0
+                        left_motor_slider.value = 0
+                        right_motor_slider.value = 0
+                        label_widget2.value = "正在執行 等待五秒"
+                        start_time = current_time+5
+                        last_triggered["Railroad Crossing Warning"] = current_time
+                else:# 間隔時間不夠
+                    robot.left_motor.value = left_motor_value
+                    robot.right_motor.value = right_motor_value
+                    left_motor_slider.value = left_motor_value
+                    right_motor_slider.value = right_motor_value
+            else:#路牌不夠大
+                robot.left_motor.value = left_motor_value
+                robot.right_motor.value = right_motor_value
+                left_motor_slider.value = left_motor_value
+                right_motor_slider.value = right_motor_value
+```
+##### PID+MSE加減速系統
+```python
+ #-----------道路追蹤--------------#
+        height = image_array.shape[0]
+        x, y = resnet(image_array, height)
+        x_slider.value = x
+        y_slider.value = y
+        
+        y = y * 0.7
+        angle = np.arctan2(x, y)
+
+        #-----------PID 控制--------------#
+        
+        
+        if angle < 0:
+            pid = (
+                angle * steering_gain_slider.value  # P 項
+                + (angle - angle_last) * steering_dgain_slider.value  # D 項
+            )
+            steering_slider.value = pid + steering_left_bias_slider.value  # 如果 angle < 0，添加偏置
+        else:
+            pid = (
+                angle * (steering_gain_slider.value-0.01)  # P 項
+                + (angle - angle_last) * (steering_dgain_slider.value+0.01)  # D 項
+            )
+            steering_slider.value = pid + steering_right_bias_slider.value  # 如果 angle >= 0，減去偏置
+        
+        angle_last = angle  # 更新上一個角度
+        
+        # 計算馬達值
+        speed_slider.value = speed_gain_slider.value+(no_move_inter//10)*0.001
+        right_motor_value = -max(min(speed_slider.value - steering_slider.value, 1.0), 0.0)
+        left_motor_value = -max(min(speed_slider.value + steering_slider.value, 1.0), 0.0)
+        #print(speed_gain_slider.value)
+```
+#### 遇到困難
+1. API輸出結果不穩定=>Fintune 自己的模型，使用自己的訓練模型可以提升到98%的準確度，其他使用try catch無視
+2. TRT模型安裝不順利，配置文檔寫錯，導致無法正常轉換
+3. TRT模型執行輸出數據與之前resnet版本不同，經過雙邊對比，找到設定值修改並限制輸出範圍
+#### DEMO影片(為了方便測式馬達不作動)
+https://youtu.be/O2baDfSN4dk?si=1ifXsYnpsZNNG2AA
+
+
+![螢幕擷取畫面 2025-01-07 005749.png](final_exam%2FDemoImage%2F%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2%202025-01-07%20005749.png)
+![螢幕擷取畫面 2025-01-07 015115.png](final_exam%2FDemoImage%2F%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2%202025-01-07%20015115.png)

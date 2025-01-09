@@ -29,17 +29,15 @@ client = OpenAI(
     api_key = OPENAI_API_KEY
 )
 # Function to analyze image (using OpenAI Image API or other logic)
-def analyze_image_with_openai(file_path):
+def analyze_image_with_openai(base64_image):
     try:
-        print(file_path)
-        base64_image = encode_image(file_path)
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="ft:gpt-4o-2024-08-06:personal:final-exam:Amj53Gsv",
             messages=[
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": """分析圖片上面有甚麼樣的路牌標示"""},
+                        {"type": "text", "text": """分析圖片上面有甚麼樣的路牌標示，並回傳一個list給我，沒看過的也照類似格式回傳，沒有路牌就回傳空的list"""},
                         {
                             "type": "image_url",
                             "image_url": {
@@ -50,6 +48,8 @@ def analyze_image_with_openai(file_path):
                 }
             ],
             max_tokens=500,
+            temperature=0,
+            top_p=0,
         )
         ans = response.choices[0]
         ans_msg = ans.message.content
@@ -107,15 +107,17 @@ def analyze_image():
         return jsonify({"error": "Empty file name."}), 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
-        # Perform image analysis
-        analysis_result = analyze_image_with_openai(file_path)
-        return jsonify({"result": analysis_result})
+        try:
+            # 直接讀取圖片內容並轉換為 Base64
+            image_data = file.read()
+            base64_image = base64.b64encode(image_data).decode('utf-8')
+            # 傳遞 Base64 圖片進行分析
+            analysis_result = analyze_image_with_openai(base64_image)
+            return jsonify({"result": analysis_result})
+        except Exception as e:
+            return jsonify({"error": f"Error processing file: {e}"}), 500
 
     return jsonify({"error": "Invalid file type."}), 400
-
 # Run the Flask app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
